@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Editable Timebox Daily</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#f1f4f3;font-family:Arial,sans-serif;color:#344f4e}
+.toolbar{position:sticky;top:0;z-index:5;display:flex;justify-content:center;gap:8px;flex-wrap:wrap;padding:9px;background:#ffffffee;border-bottom:1px solid #d4dfdd}
+button{border:1.5px solid #344f4e;background:#fff;color:#344f4e;border-radius:8px;padding:9px 13px;font-weight:700;cursor:pointer}
+button:active{transform:scale(.97)}
+button.primary{background:#344f4e;color:#fff}
+.stage{position:relative;width:min(100%,1023px);margin:12px auto;background:white;line-height:0}
+.stage img{display:block;width:100%;height:auto}
+.field{position:absolute;line-height:1.15;border:0;background:transparent;outline:none;border-radius:0;padding:1px 3px;color:#263b3a;font-family:Arial,sans-serif;font-size:clamp(8px,1.35vw,15px)}
+.field:focus{background:#ffffffa8;box-shadow:inset 0 0 0 1px #688b88}
+.date{left:5.2%;top:21.3%;width:29.5%;height:4.3%;text-align:center}
+.priority{left:5.3%;width:29.5%;height:3.1%}
+.p1{top:37.2%} .p2{top:40.6%} .p3{top:43.9%}
+.goal{left:5.1%;width:29.7%;height:3.1%}
+.g1{top:52.7%} .g2{top:56.0%} .g3{top:59.4%} .g4{top:62.8%} .g5{top:66.2%} .g6{top:70.1%} .g7{top:73.9%} .g8{top:77.7%} .g9{top:81.5%} .g10{top:85.3%} .g11{top:89.1%} .g12{top:92.9%}
+.schedule{left:48.2%;width:47.3%;height:2.6%}
+.s0{top:9.1%} .s1{top:12.4%} .s2{top:15.7%} .s3{top:19.0%} .s4{top:22.3%} .s5{top:25.6%} .s6{top:28.9%} .s7{top:32.2%} .s8{top:35.5%} .s9{top:38.8%} .s10{top:42.1%} .s11{top:45.4%} .s12{top:48.7%} .s13{top:52.0%} .s14{top:55.3%} .s15{top:58.6%} .s16{top:61.9%} .s17{top:65.2%}
+.brain{left:40.0%;width:55.5%;height:3.0%}
+.b1{top:78.7%} .b2{top:82.5%} .b3{top:86.3%} .b4{top:90.1%} .b5{top:93.9%}
+@media(max-width:600px){.toolbar{position:relative}button{font-size:12px;padding:8px 10px}.stage{margin:0 auto}}
+</style>
+</head>
+<body>
+<div class="toolbar">
+<button class="primary" onclick="downloadImage()">Download filled image</button>
+<button onclick="clearFields()">Clear entries</button>
+</div>
+<div class="stage" id="stage">
+<img id="template" alt="Timebox Daily planner template" src="PASTE_YOUR_BASE64_IMAGE_HERE">
+<input class="field date" aria-label="Date" placeholder="Enter date">
+<input class="field priority p1" aria-label="Priority 1">
+<input class="field priority p2" aria-label="Priority 2">
+<input class="field priority p3" aria-label="Priority 3">
+<input class="field goal g1" aria-label="Goal 1">
+<input class="field goal g2" aria-label="Goal 2">
+<input class="field goal g3" aria-label="Goal 3">
+<input class="field goal g4" aria-label="Goal 4">
+<input class="field goal g5" aria-label="Goal 5">
+<input class="field goal g6" aria-label="Goal 6">
+<input class="field goal g7" aria-label="Goal 7">
+<input class="field goal g8" aria-label="Goal 8">
+<input class="field goal g9" aria-label="Goal 9">
+<input class="field goal g10" aria-label="Goal 10">
+<input class="field goal g11" aria-label="Goal 11">
+<input class="field goal g12" aria-label="Goal 12">
+<input class="field schedule s0" aria-label="Schedule 05:00">
+<input class="field schedule s1" aria-label="Schedule 06:00">
+<input class="field schedule s2" aria-label="Schedule 07:00">
+<input class="field schedule s3" aria-label="Schedule 08:00">
+<input class="field schedule s4" aria-label="Schedule 09:00">
+<input class="field schedule s5" aria-label="Schedule 10:00">
+<input class="field schedule s6" aria-label="Schedule 11:00">
+<input class="field schedule s7" aria-label="Schedule 12:00">
+<input class="field schedule s8" aria-label="Schedule 13:00">
+<input class="field schedule s9" aria-label="Schedule 14:00">
+<input class="field schedule s10" aria-label="Schedule 15:00">
+<input class="field schedule s11" aria-label="Schedule 16:00">
+<input class="field schedule s12" aria-label="Schedule 17:00">
+<input class="field schedule s13" aria-label="Schedule 18:00">
+<input class="field schedule s14" aria-label="Schedule 19:00">
+<input class="field schedule s15" aria-label="Schedule 20:00">
+<input class="field schedule s16" aria-label="Schedule 21:00">
+<input class="field schedule s17" aria-label="Schedule 22:00">
+<input class="field brain b1" aria-label="Brain dump 1">
+<input class="field brain b2" aria-label="Brain dump 2">
+<input class="field brain b3" aria-label="Brain dump 3">
+<input class="field brain b4" aria-label="Brain dump 4">
+<input class="field brain b5" aria-label="Brain dump 5">
+
+</div>
+<script>
+function clearFields(){
+ if(confirm('Clear all written entries?')) document.querySelectorAll('.field').forEach(x=>x.value='');
+}
+async function downloadImage(){
+ const img=document.getElementById('template');
+ await img.decode();
+ const w=img.naturalWidth,h=img.naturalHeight;
+ const canvas=document.createElement('canvas');canvas.width=w;canvas.height=h;
+ const ctx=canvas.getContext('2d');ctx.drawImage(img,0,0,w,h);
+ const stage=document.getElementById('stage');
+ const rect=stage.getBoundingClientRect();
+ const scale=w/rect.width;
+ document.querySelectorAll('.field').forEach(el=>{
+   const value=el.value.trim();if(!value)return;
+   const r=el.getBoundingClientRect();
+   const x=(r.left-rect.left)*scale;
+   const y=(r.top-rect.top)*scale;
+   const fontPx=Math.max(13,parseFloat(getComputedStyle(el).fontSize)*scale);
+   ctx.fillStyle='#263b3a';
+   ctx.font=`${fontPx}px Arial`;
+   ctx.textBaseline='middle';
+   const maxWidth=r.width*scale-8;
+   let text=value;
+   while(ctx.measureText(text).width>maxWidth && text.length>1) text=text.slice(0,-1);
+   ctx.fillText(text,x+4*scale,y+(r.height*scale)/2,maxWidth);
+ });
+ canvas.toBlob(blob=>{
+  if(!blob){alert('Image could not be created. Try again.');return;}
+  const url=URL.createObjectURL(blob);const a=document.createElement('a');
+  a.href=url;a.download='timebox-daily-filled.jpg';a.click();
+  setTimeout(()=>URL.revokeObjectURL(url),1000);
+ },'image/jpeg',0.95);
+}
+</script>
+</body>
+</html>
